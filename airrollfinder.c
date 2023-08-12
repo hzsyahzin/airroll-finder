@@ -15,6 +15,7 @@ void get_airrolls(int endurance, bool fap, bool hr)
 	char str[1024];
 	sprintf(str, "%dEND", endurance);
 
+	// Necessary to have separate to preserve floating point error
 	if (fap && hr)
 	{
 		strcat(str, "-FAP-HR");
@@ -37,18 +38,14 @@ void get_airrolls(int endurance, bool fap, bool hr)
 	FILE *fptr = fopen(str, "w");
 
 	float target, boundary, compared_weight;
-	bool masked;
-
 	for (int h=0; h<70; h++)
 	{
 		if (!strcmp("Mask of the Father", head_names[h]))
 		{
-			masked = true;
 			compared_weight = max_weight * 1.05f;
 		}
 		else
 		{
-			masked = false;
 			compared_weight = max_weight;
 		}
 
