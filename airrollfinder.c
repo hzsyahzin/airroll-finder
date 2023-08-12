@@ -7,20 +7,33 @@
 #include "armordata.h"
 
 
-void get_airrolls(int endurance, bool fap)
+void get_airrolls(int endurance, bool fap, bool hr)
 {
 	float max_weight = (float)endurance + 40.0f;
 	int results = 0;
 
-	char str[100];
-	if (fap)
-	{
-		sprintf(str, "%dEND-FAP.txt", endurance);
-		max_weight *= 1.2f;
-	}
-	else
-		sprintf(str, "%dEND.txt", endurance);
+	char str[1024];
+	sprintf(str, "%dEND", endurance);
 
+	if (fap && hr)
+	{
+		strcat(str, "-FAP-HR");
+		max_weight = max_weight * 1.5f * 1.2f;
+	}
+	else if (fap)
+	{
+		strcat(str, "-FAP");
+		max_weight = max_weight * 1.2f;
+	}
+	else if (hr)
+	{
+		strcat(str, "-HR");
+		max_weight = max_weight * 1.5f;
+	}
+
+	printf("Equip load: %.20f\n", max_weight);
+
+	strcat(str, ".txt");
 	FILE *fptr = fopen(str, "w");
 
 	float target, boundary, compared_weight;
@@ -83,13 +96,15 @@ void get_airrolls(int endurance, bool fap)
 
 int main(int argc, char* argv[])
 {
-	if (argc != 3)
+	if (argc != 4)
 	{
-		printf("airoll-finder requires 2 arguments: [ENDURANCE] [FAP (y/n)]\n");
+		printf("airoll-finder requires 3 arguments: [ENDURANCE] [FAP (y/n)] [HR (y/n)]\n");
 		return -1;
 	}
 
 	bool fap = (!strcmp(argv[2], "y") || !strcmp(argv[2], "Y"));
-	get_airrolls(strtol(argv[1], NULL, 10), fap);
+	bool hr = (!strcmp(argv[3], "y") || !strcmp(argv[3], "Y"));
+
+	get_airrolls(strtol(argv[1], NULL, 10), fap, hr);
 	return 0;
 }
